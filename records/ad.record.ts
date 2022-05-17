@@ -4,8 +4,10 @@ import { FieldPacket } from 'mysql2';
 import { AdEntity, NewAdEntity } from '../types';
 import { ValidationError } from '../utils/errors';
 import { pool } from '../utils/db';
+import { AdListElement } from '../types/ad/ad-list';
 
 type AdRecordResult = [AdEntity[], FieldPacket[]]
+type AdAllRecordResult = [AdListElement[], FieldPacket[]]
 
 export class AdRecord implements AdEntity {
   id: string;
@@ -59,6 +61,32 @@ export class AdRecord implements AdEntity {
       id,
     }) as AdRecordResult;
 
-    return result.length === 0 ? new AdRecord(result[0]) : null;
+    return result.length !== 0 ? new AdRecord(result[0]) : null;
+  }
+
+  static async getAll(): Promise<AdListElement[]> {
+    const [result] = await pool.execute('SELECT  `id`,  `lat`, `lon` FROM `ads`') as AdAllRecordResult;
+
+    return result;
+  }
+
+  async save() {
+    pool.execute('INSERT INTO `ads`(`id`, `name`, `description`, `price`, `url`, `lat`, `lon`) VALUES (:id, :name, :description, :price, :url, :lat, :lon)', {
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      price: this.price,
+      url: this.url,
+      lat: this.lat,
+      lon: this.lon,
+    });
+
+    return this.id;
+  }
+
+  async remove() {
+    pool.execute('DELETE FROM `ads` WHERE  `id`=:id', {
+      id: this.id,
+    });
   }
 }
