@@ -1,9 +1,11 @@
 import { v4 as uuid } from 'uuid';
 
-import { AdEntity } from '../types';
+import { FieldPacket } from 'mysql2';
+import { AdEntity, NewAdEntity } from '../types';
 import { ValidationError } from '../utils/errors';
+import { pool } from '../utils/db';
 
-interface NewAdEntity extends Omit<AdEntity, 'id'>{}
+type AdRecordResult = [AdEntity[], FieldPacket[]]
 
 export class AdRecord implements AdEntity {
   id: string;
@@ -21,8 +23,8 @@ export class AdRecord implements AdEntity {
   lon: number;
 
   constructor(ad: NewAdEntity) {
-    this.validate(ad);
-    this.id = uuid();
+    AdRecord.validate(ad);
+    this.id = ad.id ?? uuid();
     this.name = ad.name;
     this.description = ad.description;
     this.price = ad.price;
@@ -32,7 +34,7 @@ export class AdRecord implements AdEntity {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private validate(ad: NewAdEntity) {
+  private static validate(ad: NewAdEntity) {
     if (!ad.name || ad.name.trim().length < 1 || ad.name.trim().length > 100) {
       throw new ValidationError('Nazwa ogłoszenia musi zawierać od 1 do 100 znaków');
     }
@@ -50,5 +52,13 @@ export class AdRecord implements AdEntity {
     if (typeof ad.lat !== 'number' || typeof ad.lon !== 'number') {
       throw new ValidationError('Nie można zlokalizować ogłoszenia');
     }
+  }
+
+  static async getOne(id: string): Promise<AdRecord | null> {
+    const [result] = await pool.execute('SELECT * FROM `ads` WHERE `id` = :id', {
+      id,
+    }) as AdRecordResult;
+
+    return result.length === 0 ? new AdRecord(result[0]) : null;
   }
 }
