@@ -1,3 +1,3 @@
-import { AdRecord } from '../../records/ad.record';
+import { AdEntity } from './ad-entity';
 
-export type AdListElement = Omit<AdRecord, 'name'| 'description' | 'price' | 'url' >
+export type AdListElement = Omit<AdEntity, 'name'| 'description' | 'price' | 'url' >
