@@ -1,5 +1,5 @@
 import { AdRecord } from '../records/ad.record';
-// import { pool } from '../utils/db';
+import { pool } from '../utils/db';
 
 let newAd: AdRecord;
 const newAdId = '456';
@@ -16,13 +16,12 @@ beforeAll(() => {
   });
 });
 
-// afterAll(() => {
-//   pool.end();
-// });
+afterAll(async () => {
+  await pool.end();
+});
 
 test('AdRecord returns data from database for one entry', async () => {
   const ad = await AdRecord.getOne('123');
-  console.log(ad);
   expect(ad).toBeDefined();
   expect(ad!.id).toBe('123');
   expect(ad!.name).toBe('test');
@@ -40,7 +39,7 @@ test('AdRecord return null from database unexsisting entry', async () => {
 });
 //
 test('Find all Ads and return only id and lat & lon', async () => {
-  const allAd = await AdRecord.getAll();
+  const allAd = await AdRecord.getAll('');
   allAd.forEach((ad) => {
     expect(ad).toBeDefined();
     expect(ad!.id).toBeDefined();
@@ -53,7 +52,7 @@ test('Add record should be added to db', async () => {
   const id = await newAd.save();
   const checkAdInDb = await AdRecord.getOne(newAdId);
 
-  expect({
+  expect(checkAdInDb).toEqual({
     id: newAdId,
     name: 'test2',
     description: 'desc',
@@ -61,12 +60,13 @@ test('Add record should be added to db', async () => {
     lat: 12.3232,
     url: 'https://localhost:3000',
     lon: 123.422,
-  }).toEqual(checkAdInDb);
+  });
   expect(id).toBe(newAdId);
 });
 
 test('Remove Ad  should remove ad from db', async () => {
   await newAd.remove();
-  const checkAdInDb = await AdRecord.getOne(newAdId);
+
+  const checkAdInDb = (await AdRecord.getOne('456'));
   expect(checkAdInDb).toBeNull();
 });

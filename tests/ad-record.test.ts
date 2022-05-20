@@ -1,4 +1,9 @@
 import { AdRecord } from '../records/ad.record';
+import { pool } from '../utils/db';
+
+afterAll(async () => {
+  await pool.end();
+});
 
 test('Can build AdRecord', () => {
   const ad = new AdRecord({
@@ -21,7 +26,6 @@ test('Can build AdRecord', () => {
 
 test('Create Add record when name is undefined should throw', () => {
   const wrongAd = {
-    description: 'blach',
     url: 'https://megak.pl',
     lat: 1,
     price: 0,

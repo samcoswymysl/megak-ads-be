@@ -64,14 +64,16 @@ export class AdRecord implements AdEntity {
     return result.length !== 0 ? new AdRecord(result[0]) : null;
   }
 
-  static async getAll(): Promise<AdListElement[]> {
-    const [result] = await pool.execute('SELECT  `id`,  `lat`, `lon` FROM `ads`') as AdAllRecordResult;
+  static async getAll(name: string): Promise<AdListElement[]> {
+    const [results] = await pool.execute('SELECT  `id`,  `lat`, `lon` FROM `ads` WHERE  `name` LIKE :name', {
+      name: `%${name}%`,
+    }) as AdAllRecordResult;
 
-    return result;
+    return results;
   }
 
   async save() {
-    pool.execute('INSERT INTO `ads`(`id`, `name`, `description`, `price`, `url`, `lat`, `lon`) VALUES (:id, :name, :description, :price, :url, :lat, :lon)', {
+    await pool.execute('INSERT INTO `ads`(`id`, `name`, `description`, `price`, `url`, `lat`, `lon`) VALUES (:id, :name, :description, :price, :url, :lat, :lon)', {
       id: this.id,
       name: this.name,
       description: this.description,
@@ -85,7 +87,7 @@ export class AdRecord implements AdEntity {
   }
 
   async remove() {
-    pool.execute('DELETE FROM `ads` WHERE  `id`=:id', {
+    await pool.execute('DELETE FROM `ads` WHERE  `id`=:id', {
       id: this.id,
     });
   }
