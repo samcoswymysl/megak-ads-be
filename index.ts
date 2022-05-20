@@ -4,6 +4,7 @@ import 'express-async-errors';
 import rateLimit from 'express-rate-limit';
 import { handleError } from './utils/errors';
 import './utils/db';
+import { adRouter } from './router/ad.router';
 
 const PORT = 5000;
 
@@ -20,6 +21,7 @@ app.use(rateLimit({
 app.use(express.json());
 
 // Routers
+app.use('/ad', adRouter);
 
 app.use(handleError);
 
