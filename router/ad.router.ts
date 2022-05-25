@@ -14,7 +14,7 @@ adRouter
     res.json(ad);
   })
   .post('/', async (req, res) => {
-    const newAdData = req.body();
+    const newAdData = req.body;
     const ad = new AdRecord(newAdData);
     const id = await ad.save();
 
