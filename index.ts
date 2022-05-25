@@ -25,8 +25,8 @@ app.use(express.json());
 const router = Router();
 
 router.use('/ad', adRouter);
-router.use(handleError);
 
+app.use(handleError);
 app.use('/api', router);
 
 app.listen(PORT, 'localhost', () => console.log('Server listen on http://localhost:5000'));
