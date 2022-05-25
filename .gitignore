@@ -247,6 +247,7 @@ fabric.properties
 # See https://youtrack.jetbrains.com/issue/JBR-2257
 .idea/$CACHE_FILE$
 .idea/
+config.ts
 
 # CodeStream plugin
 # https://plugins.jetbrains.com/plugin/12206-codestream
