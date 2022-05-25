@@ -5,6 +5,7 @@ export const pool = createPool({
   host: config.dbhost,
   user: config.user,
   database: config.database,
+  password: config.password,
   namedPlaceholders: true,
   decimalNumbers: true,
 });
