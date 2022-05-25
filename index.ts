@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 import cors from 'cors';
 import 'express-async-errors';
 import rateLimit from 'express-rate-limit';
@@ -21,8 +21,12 @@ app.use(rateLimit({
 app.use(express.json());
 
 // Routers
-app.use('/ad', adRouter);
 
-app.use(handleError);
+const router = Router();
+
+router.use('/ad', adRouter);
+router.use(handleError);
+
+app.use('/api', router);
 
 app.listen(PORT, 'localhost', () => console.log('Server listen on http://localhost:5000'));
